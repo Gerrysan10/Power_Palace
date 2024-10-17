@@ -1,0 +1,165 @@
+{% extends "base_m.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+        .contenido {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            background-color: white;
+            font-family: 'Magra', sans-serif;
+            margin-top: 15px;
+        }
+
+        #contenedor-formulario {
+            background-color: #001514;
+            padding: 25px 0;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+            margin: 0 auto;
+            /* Agregar esta línea */
+            text-align: center;
+        }
+
+        #formulario-producto {
+            display: block;
+            margin: 0 auto;
+            max-width: 280px;
+            /* Agregar esta línea para limitar el ancho del formulario */
+            align-items: center;
+        }
+
+        .cont {
+            display: inline-flex;
+            /* Modificación */
+            font-size: 16px;
+            justify-content: space-between;
+            width: 50%;
+            color: rgb(255, 248, 248);
+        }
+
+        input {
+            display: inline-block;
+            /* Modificación */
+            margin: 0 0 25px !important;
+            width: 50% !important;
+            /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+            height: 25px !important;
+            color: black !important;
+            /* Establecer el color del texto en blanco */
+            border-radius: 30px !important;
+            text-align: center !important;
+            border: black !important;
+            resize: none;
+        }
+
+        #metodo_pago {
+            background-color: rgba(255, 255, 255, 0.3);
+            /* Cambiar opacity por rgba */
+        }
+
+        #subtotal,
+        #iva,
+        #total {
+            background-color: white;
+        }
+
+        input::placeholder {
+            color: white;
+            /* Cambiar el color del placeholder */
+            opacity: .5;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cancelar,
+        .cambiar {
+            display: block;
+            margin: 0 0 20px 10%;
+            width: 80%;
+            /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+            height: 30px;
+            color: black;
+            /* Establecer el color del texto en blanco */
+            border-radius: 30px;
+            text-align: center;
+            border: black;
+            resize: none;
+            padding: 2px 0;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            padding: 8px 16px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            width: 220px;
+            background-color: #E6AF2E;
+            font-family: 'Magra', sans-serif;
+            font-size: 16px;
+
+        }
+
+        .cambiar {
+            background-color: rgb(255, 242, 242);
+        }
+
+        .cancelar {
+            background-color: #F54436;
+        }
+    </style>
+</head>
+<div class=contenido>
+    <div style="width: 100%; text-align: center;">
+        <div id="contenedor-formulario">
+            <form id="formulario-producto" method="post" action="/modificar_pago/" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p class="cont">Método de pago</p><input type="text" name="metodo" id="metodo_pago" value="" readonly>
+                <p class="cont">Subtotal $</p><input type="number" name="subtotal" id="subtotal" value="" readonly><br>
+                <p class="cont">IVA (16%) $</p><input type="number" name="iva" id="iva" value="" readonly><br>
+                <p class="cont">Total $</p><input type="number" name="precio_pago" id="total"
+                    onchange="calcularSubtotal()" required>
+                <div><button type="submit">Pagar</button></div>
+                <p><a href="/pagar" class="cambiar">Cambiar forma de pago</a></p>
+                <p><a href="/regresar" class="cancelar">Cancelar compra</a></p>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block js %}
+<script>
+    function calcularSubtotal() {
+        var total = parseFloat(document.getElementById("total").value);
+        var iva = (total / 1.16) * .16;
+        document.getElementById("iva").value = iva.toFixed(2);
+        var subtotal = total - iva;
+        document.getElementById("subtotal").value = subtotal.toFixed(2);
+    }
+
+    $(document).ready(function () {
+        // Obtener el valor del método de pago desde el contexto
+        var metodoPago = "{{ metodo_pago }}";
+
+        // Establecer el valor en el campo de entrada
+        $("#metodo_pago").val(metodoPago);
+    });
+</script>
+{% endblock js %}

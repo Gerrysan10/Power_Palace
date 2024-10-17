@@ -1,0 +1,261 @@
+{% extends "base_v.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+        .contenido {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            background-color: white;
+            font-family: 'Magra', sans-serif;
+            margin-top: 15px;
+        }
+
+        #contenedor-formulario {
+            background-color: #A3320B;
+            padding: 25px 0;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+            margin: 0 auto;
+            /* Agregar esta línea */
+            text-align: center;
+        }
+
+        #formulario-producto {
+            display: block;
+            margin: 0 auto;
+            max-width: 280px;
+            /* Agregar esta línea para limitar el ancho del formulario */
+            align-items: center;
+        }
+
+        .cont {
+            display: inline-flex;
+            /* Modificación */
+            font-size: 16px;
+            justify-content: space-between;
+            width: 50%;
+            color: rgb(255, 248, 248);
+        }
+
+        input {
+            display: inline-block;
+            /* Modificación */
+            margin: 0 0 25px !important;
+            width: 50% !important;
+            /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+            height: 25px !important;
+            color: black !important;
+            /* Establecer el color del texto en blanco */
+            border-radius: 30px !important;
+            text-align: center !important;
+            border: black !important;
+            resize: none;
+        }
+
+        #metodo_pago {
+            background-color: rgba(255, 255, 255, 0.3);
+            /* Cambiar opacity por rgba */
+        }
+
+        #subtotal,
+        #iva,
+        #Total {
+            background-color: white;
+        }
+
+        input::placeholder {
+            color: white;
+            /* Cambiar el color del placeholder */
+            opacity: .5;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .cancelarbtn,
+        .cambiar {
+            display: block;
+            margin: 0 0 20px 10%;
+            width: 80%;
+            /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+            height: 30px;
+            color: black;
+            /* Establecer el color del texto en blanco */
+            border-radius: 30px;
+            text-align: center;
+            border: black;
+            resize: none;
+            padding: 2px 0;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            padding: 8px 16px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            width: 220px;
+            background-color: #E6AF2E;
+            font-family: 'Magra', sans-serif;
+            font-size: 16px;
+
+        }
+
+        .cambiar {
+            background-color: rgb(255, 242, 242);
+        }
+
+        .cancelarbtn {
+            background-color: #F54436;
+        }
+        .modal-contenido {
+        font-family: 'Magra', sans-serif;
+        width: 400px;
+        height: 130px;
+        background-color: #A3320B;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50%; /* Centrar verticalmente */
+        left: 50%; /* Centrar horizontalmente */
+        transform: translate(-50%, -55%); /* Centrar con transform */
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: solid black;
+      }
+  
+      .modal-contenido p{
+        color: white;
+        font-size: 15px;
+        margin-top: 50px;
+      }
+  
+      .modal-cerrar{
+        width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: flex-end; /* Alinear el contenido al final del div */
+        background-color: white;
+        position: absolute; /* Establecer posición absoluta */
+        top: 0; /* Anclar el div en la parte superior del modal */
+        left: 0; /* Anclar el div a la izquierda del modal */
+        padding: 2px; /* Añadir un espacio interno de 10px */
+        box-sizing: border-box; /* Incluir el padding en el ancho total del div */
+        border-bottom: solid black;
+      }
+  
+  
+      .modal-cerrar img{
+        width: 40px;
+        height: 30px;
+        cursor: pointer;
+        
+      }
+  
+      .botones-modal{
+        display: inline-block;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        margin-bottom: 15px;
+        padding: 4px 6px;
+        border: 0;
+      }
+
+      #messages a{
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+        padding: 0 10px;
+
+      }
+    </style>
+</head>
+<div class=contenido>
+    <div style="width: 100%; text-align: center;">
+        <div id="contenedor-formulario">
+            <form id="formulario-producto" method="post" action="/post_pagov/" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <p class="cont">Método de pago</p><input type="text" name="metodo_pago" id="metodo_pago" value=""
+                    readonly>
+                <p class="cont">Subtotal $</p><input type="text" name="subtotal" id="subtotal" value="" readonly><br>
+                <p class="cont">IVA (16%) $</p><input type="text" name="iva" id="iva" value="" readonly><br>
+                <p class="cont">Total $</p><input type="text" name="total" id="Total" onchange="calcularSubtotal()"
+                    value="$" readonly>
+                <div><button type="submit">Pagar</button></div>
+                <p><a href="/pago" class="cambiar">Cambiar forma de pago</a></p>
+                <p><a href="/ventas" class="cancelarbtn">Cancelar compra</a></p>
+            </form>
+        </div>
+    </div>
+</div>
+{% for message in messages %}
+  <div class="ventana" id="miVentana" style="position: absolute; bottom: 250px; left: 50%;">
+    <div class="modal-contenido">
+      <div class="modal-cerrar">
+        <a href="/interfaz_venta"><img src="/media/cerrar.png" id="cerrar" alt="cerrar"></a>
+      </div>
+      <p id="messages">{{ message }}</p>
+      <a href="/interfaz_venta"><button class="botones-modal">Finalizar</button></a>
+    </div>
+  </div>      
+  </div>
+  {% endfor %} 
+{% endblock %}
+
+
+{% block js %}
+<script>
+    document.getElementById("btn-back").addEventListener("click", function (event) {
+      event.preventDefault(); // Evita que el enlace navegue a la página principal
+      window.location.replace('/pago/'); // Redirige a la página de registro de productos sin agregar una entrada al historial
+    });
+
+    function calcularSubtotal() {
+        var total = parseFloat(document.getElementById("Total").value);
+        var iva = (total / 1.16) * 0.16;
+        document.getElementById("iva").value = iva.toFixed(2);
+        var subtotal = total - iva;
+        document.getElementById("subtotal").value = subtotal.toFixed(2);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener el valor del método de pago desde el contexto
+        var metodoPago = "{{ metodo_pago }}";
+        var tota = parseFloat(document.getElementById("Total").value.slice(1));
+
+        // Establecer el valor en el campo de entrada
+        $("#metodo_pago").val(metodoPago);
+        $("#Total").val(tota.toFixed(2));
+
+        // Obtener el valor del total desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const totalFromURL = urlParams.get('total');
+
+        // Establecer el valor en el campo de entrada
+        const totalInput = document.getElementById('Total');
+        totalInput.value = totalFromURL;
+
+        // Calcular subtotal y iva al modificar el valor del campo
+        calcularSubtotal();
+    });
+
+</script>
+{% endblock js %}

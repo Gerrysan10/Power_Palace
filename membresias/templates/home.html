@@ -1,0 +1,403 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% block title %}<title>Power Palace</title>{% endblock title %}
+    <link rel="shortcut icon" href="/media/icono-logo.ico">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" media="screen,projection">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0066ff">
+    <link rel="stylesheet" type="text/css" href="{% static 'materialize/css/materialize.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'materialize/css/materialize.css' %}">
+    <script type="text/javascript" src="{% static 'materialize/css/materialize.css' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript" src="{% static 'materialize/jQuery/jquery.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- <script  src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js "  integrity = " sha384-THVO / sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb / PTA7LdUHs "  crossorigin = " anonymous " > </script>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.min.js" ></script>-->
+
+
+
+
+
+    <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/se-2.2.13/dt-1.10.18/af-2.3.2/b-1.5.4/b-flash-1.5.4/b-html5-1.5.4/r-2.2.2/datatables.min.css"/>-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.2.2/css/responsive.dataTables.min.css">
+    <script src="{% static '/locale/es.js' %}"></script>
+
+    <style>
+        body {
+            background-color: #001514;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        nav {
+            border-color: #001514;
+        }
+
+        nav .brand-logo.brand-logo-lg {
+            display: none;
+        }
+
+        @media only screen and (max-width: 992px) {
+            nav .brand-logo.brand-logo-lg {
+                display: inline-block;
+            }
+        }
+
+        @media only screen and (min-width: 993px) {
+            nav ul a.sidenav-trigger {
+                display: block;
+            }
+        }
+
+        @media screen and (max-width: 280px) {
+            nav ul a {
+                padding: 0 5px;
+            }
+        }
+
+        nav .brand-logo {
+            font-size: 1.5em;
+        }
+
+        input {
+            font-size: 12px !important;
+            /*height:2.2rem !important;*/
+        }
+
+        .sidenav .collapsible-header,
+        .sidenav.fixed .collapsible-header {
+            padding: 0 32px !important;
+        }
+
+        .sidenav .collapsible-body li a,
+        .sidenav.fixed .collapsible-body li a {
+            padding: 0 50px;
+        }
+
+        .sidenav .collapsible-header i {
+            font-size: 24px;
+        }
+
+        /*Tables custom CSS*/
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: none;
+            background-color: #c2c2c2;
+            border: none;
+            color: white !important;
+            font-size: 12px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: none;
+            background-color: lightgrey;
+            border: none;
+
+        }
+
+        table.dataTable thead th,
+        table.dataTable thead td {
+            border-bottom: 1px solid #9e9e9e !important;
+        }
+
+        @media only screen and (max-width: 992px) {
+            table.responsive-table td {
+                min-height: 2em;
+            }
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #9e9e9e;
+        }
+
+        @media screen and (max-width: 640px) {
+            .dataTables_wrapper .dataTables_length {
+                float: left !important;
+                width: 60px;
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+            .dataTables_wrapper .dataTables_filter {
+                float: right !important;
+                width: auto;
+                margin-top: 0em;
+            }
+        }
+
+        .dataTables_info {
+            color: grey !important;
+        }
+
+        @media only screen and (min-width: 0) {
+            html {
+                font-size: 12px;
+            }
+        }
+
+        /*table tr{*/
+        /*    cursor:pointer ;*/
+        /*}*/
+        th {
+            font-size: 12px;
+        }
+
+        td {
+            font-size: 12px;
+        }
+
+        .containercard {
+            background-color: white;
+            margin: 0% 10% 0% 10% !important;
+            min-height: 100vh;
+        }
+
+        .dropdown-content li>a,
+        .dropdown-content li>span {
+            font-size: 12px;
+        }
+
+        @media screen and (max-width: 640px) {
+            .containercard {
+                margin: 0 !important;
+            }
+        }
+
+        table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first-child:before,
+        table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>th:first-child:before {
+            border: none;
+            font-family: 'Material Icons';
+            content: "expand_more";
+            bottom: 0;
+            left: 0;
+            top: calc(100%/2.7);
+            border-radius: 0px;
+            background-color: white;
+            color: black;
+            font-size: 20px;
+            box-shadow: none;
+            width: auto;
+        }
+
+        table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td:first-child:before,
+        table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th:first-child:before {
+            background-color: none;
+            font-family: 'Material Icons';
+            content: "expand_less";
+
+        }
+
+        .modal-small {
+            width: 500px;
+            height: auto;
+            overflow: visible;
+            max-height: 90%;
+        }
+
+        @media screen and (max-width: 640px) {
+            .modal-small {
+                width: 350px;
+
+            }
+        }
+
+        .dataTables_length select {
+            display: block;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3%;
+        }
+
+        .logosize {
+            width: 50%;
+            height: 50%;
+        }
+
+        .menu {
+            margin-top: 3%;
+        }
+    </style>
+    {% if not view_name == "landing" %}
+    <nav style="background-color:#001514; box-shadow: none;">
+        <div class="nav-wrapper">
+            <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="left hide-on-med-and-down ">
+                <li><a href="#" data-target="slide-out" class="sidenav-trigger "><i class="material-icons">menu</i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background" style="height: 150px;">
+                    <img src="/media/fondo.jpeg" style="width:100%; height: 100%;">
+                </div>
+                <a href="#user"><img class="circle" src="/media/usuario.webp"></a>
+
+                {% if request.user.is_authenticated %}
+                <a href="#name"><span class="white-text name">{{request.user}}</span></a>
+                <a href="#email"><span class="white-text email">{{request.user.email}}</span></a>
+                {% endif %}
+            </div>
+        </li>
+
+        <div class="menu" style="margin-top: 22%;">
+            <li><a class="waves-teal" href="loginm/"><i class="material-icons">inventory</i>Membresias</a></li>
+            <li><a class="waves-teal" href="loginv/"><i class="material-icons">groups</i>Ventas</a></li>
+            {% if request.user.is_authenticated %}
+            <li><a href="/logout/"><i class="material-icons">exit_to_app</i>Cerrar sesión</a></li>
+            {% endif %}
+        </div>
+        {% if request.user.is_staff %}
+        {% endif %}
+
+        {% if request.user.tipo_usuario.cordiandor_de_area == 1 %}
+        {% else %}
+
+        {% endif %}
+        
+
+    </ul>
+</head>
+
+<body>
+    <div class="logo">
+        <img src="/media/image.png" alt="" class="logosize">
+    </div>
+
+
+    <main>
+
+
+
+    </main>
+
+    <script type="text/javascript" src="{% static 'materialize/js/materialize.min.js' %}"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/responsive/2.2.2/js/dataTables.responsive.min.js"></script>
+    <script src="{% static 'jsPDF/jspdf.js' %}"></script>
+    <script src="{% static 'auto-table/auto-table.plugin.js' %}"></script>
+
+
+    <script type="text/javascript">
+        // Recordar tab
+        $('#tabs-swipe').tabs({
+            // swipeable:true,
+
+        });
+
+        $(document).ready(function () {
+            $('select').formSelect();
+        });
+        $("select[required]").css({
+            display: "block",
+            position: 'absolute',
+            background: "none",
+            border: "none",
+            color: "transparent",
+            top: 0,
+        })
+        $(document).ready(function () {
+            $('.sidenav').sidenav({
+                draggable: true,
+            });
+        });
+
+        $(document).ready(function () {
+            $('.tooltipped').tooltip({
+
+            });
+        });
+        $(document).ready(function () {
+            $('.collapsible').collapsible();
+        });
+        $(document).ready(function () {
+            $('.fixed-action-btn').floatingActionButton({
+                toolbarEnabled: false
+            });
+        });
+
+        var optionsDatepicker = {
+            container: 'body',
+            showClearBtn: true,
+            setDefaultDate: true,
+            format: "dd/mm/yyyy",
+            // defaultDate: new Date(),
+            i18n: {
+                cancel: 'Cancelar',
+                clear: 'Borrar',
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dec'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                weekdaysAbbrev: ['D', 'L', 'm', 'M', 'J', 'V', 'S']
+            },
+
+        }
+        $(document).ready(function () {
+            $('.datepicker').datepicker(optionsDatepicker);
+        });
+
+        $(document).ready(function () {
+            $('.timepicker').timepicker({
+                container: 'body',
+                vibrate: true,
+                showClearBtn: true,
+                twelveHour: false,
+                i18n: {
+                    cancel: 'Cancelar',
+                    clear: 'Borrar',
+                    done: 'Agregar',
+
+                }
+            });
+        });
+
+
+    </script>
+    {% block js %}
+    {% endblock js %}
+
+    <footer>
+        <div class="footer-copyright grey-text black">
+            <div class="container" style="display: flex; justify-content: center; align-items: center;">
+                © Power Palace 2023
+                <a class="grey-text" alling=" center" href="#!"></a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

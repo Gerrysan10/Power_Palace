@@ -1,0 +1,174 @@
+{% extends "base_m.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Usuarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+      .contenido {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        background-color: white;
+        font-family: 'Magra', sans-serif;
+      }
+      #contenedor-formulario {
+        background-color: #001514;
+        padding: 25px 0;
+        border-radius: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 350px;
+        width: 100%;
+        margin: 0 auto; /* Agregar esta línea */
+        text-align: center; 
+      }
+  
+      #formulario-usuarios{
+          display: block;
+          margin: 0 auto; 
+          max-width: 220px; /* Agregar esta línea para limitar el ancho del formulario */
+          align-items: center;
+      }
+  
+      input,
+      textarea {
+          display: block !important;
+          margin: 0 0 25px !important;
+          width: 100% !important; /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+          height: 25px !important;
+          background-color: rgba(255, 255, 255, 0.3) !important; /* Cambiar opacity por rgba */
+          color: #FFFFFF !important; /* Establecer el color del texto en blanco */
+          border-radius: 30px !important;
+          text-align: center !important;
+          border: black !important;
+          resize: none;
+      }
+      input::placeholder {
+          color: white; /* Cambiar el color del placeholder */
+          opacity: .5;
+      }
+      textarea::placeholder {
+          color: white; /* Cambiar el color del placeholder */
+          opacity: .5;
+      }
+  
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+      }
+  
+      button[type="submit"] {
+        padding: 8px 16px;
+        background-color: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        border-radius: 30px;
+        width: 100px;
+      }
+      .modal-contenido {
+        font-family: 'Magra', sans-serif;
+        width: 400px;
+        height: 130px;
+        background-color: #001514;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50%; /* Centrar verticalmente */
+        left: 50%; /* Centrar horizontalmente */
+        transform: translate(-50%, -50%); /* Centrar con transform */
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: solid black;
+      }
+  
+      .modal-contenido p{
+        color: white;
+        font-size: 15px;
+        margin-top: 50px;
+      }
+  
+      .modal-cerrar{
+        width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: flex-end; /* Alinear el contenido al final del div */
+        background-color: white;
+        position: absolute; /* Establecer posición absoluta */
+        top: 0; /* Anclar el div en la parte superior del modal */
+        left: 0; /* Anclar el div a la izquierda del modal */
+        padding: 2px; /* Añadir un espacio interno de 10px */
+        box-sizing: border-box; /* Incluir el padding en el ancho total del div */
+        border-bottom: solid black;
+      }
+  
+  
+      .modal-cerrar img{
+        width: 40px;
+        height: 30px;
+        cursor: pointer;
+        
+      }
+  
+      .botones-modal{
+        display: inline-block;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        margin-bottom: 15px;
+        padding: 4px 6px;
+        border: 0;
+      }
+
+      #messages a{
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+        padding: 0 10px;
+
+      }
+    </style>
+
+</head>
+<div class=contenido>
+  <div style="width: 100%; text-align: center;">
+    <h1 style="font-size: 35px; padding-bottom: 5px;">Datos del Usuario</h1>
+    <div id="contenedor-formulario">
+        <form id="formulario-usuarios" method="post" action="/post_usuarios/" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="text" id="nombre" name="nombre" required placeholder="Nombre">
+          <input type="text" id="primer_ap" name="primer_apellido" required placeholder="Primer apellido">
+          <input type="text" id="segundo_ap" name="segundo_apellido" required placeholder="Segundo apellido">
+          <input type="text" id="correo" name="correo" required placeholder="Correo electronico">
+          <input type="number" id="telefono" name="telefono" required placeholder="Telefono">
+          <button type="submit">Guardar</button>
+        </form>
+      </div>
+  </div>
+  {% for message in messages %}
+  <div class="ventana" id="miVentana" style="position: absolute; bottom: 250px; left: 50%;">
+    <div class="modal-contenido">
+      <div class="modal-cerrar">
+        <a href="/verificacionID"><img src="/media/cerrar.png" id="cerrar" alt="cerrar"></a>
+      </div>
+      <p id="messages">{{ message|safe }}</p>
+    </div>
+  </div>      
+  </div>
+  {% endfor %} 
+</div>
+
+{% endblock content %}
+</html>
+
+{% block js %}
+
+{% endblock js %}

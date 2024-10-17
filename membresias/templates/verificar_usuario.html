@@ -1,0 +1,31 @@
+{% block content %}
+<div id="resultado" style="display: none;"></div>
+{% if mensaje %}
+<p>{{ mensaje }}</p>
+{% endif %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+    // Después de la línea "const data = new FormData(form);" en el archivo JavaScript
+fetch(url, {
+    method: 'POST',
+    body: data,
+}).then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Error en la petición');
+    }
+}).then(data => {
+    // Mostrar el resultado en la página
+    const resultadoDiv = document.getElementById('resultado');
+    resultadoDiv.innerText = data.mensaje;
+    resultadoDiv.style.display = 'block';
+}).catch(error => {
+    console.error(error);
+});
+
+</script>
+{% endblock %}

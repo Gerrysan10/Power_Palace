@@ -1,0 +1,737 @@
+{% extends "base_v.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos de la tabla */
+        /* Estilos del contenedor de la tabla */
+        .contenido {
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            font-family: 'Magra', sans-serif;
+
+        }
+
+        .contenido h1 {
+            font-size: 35px;
+        }
+
+        .contenedor_buscar {
+            display: flex;
+        }
+
+        .contenedor_buscar img {
+            width: 38px;
+            height: 35px;
+            margin: 0 0 0 10px;
+        }
+
+        .buscar {
+            width: 20%;
+            height: 40px;
+            background-color: #E6AF2E;
+            padding: 0 14px;
+            border-radius: 20px;
+            margin-bottom: 50px;
+        }
+
+        input {
+            border: 0;
+            text-align: center;
+        }
+
+        input::placeholder {
+            font-weight: bold;
+            color: black;
+            /* Cambiar el color del placeholder */
+            opacity: .8;
+        }
+
+        #tabla-container {
+            width: 100%;
+            margin: 0 auto;
+            /* Centrar horizontalmente */
+        }
+
+        /* Estilos de la tabla */
+        #tabla-productos {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #tabla-productos th {
+            background-color: #A3320B;
+            color: white;
+            font-size: 16px;
+        }
+
+        #tabla-productos td {
+            font-size: 16px;
+        }
+
+        #tabla-productos th,
+        #tabla-productos td {
+            border: 1px solid black;
+            padding: 8px 2px;
+            text-align: center;
+        }
+
+        .acciones {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .imagenes {
+            width: 20px;
+            height: 20px;
+
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Fondo oscuro semitransparente */
+            z-index: 9999;
+            /* Asegurarse de que el modal esté por encima del resto del contenido */
+        }
+
+        .form_contenido {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+            background-color: white;
+            font-family: 'Magra', sans-serif;
+        }
+
+        #contenedor-formulario {
+            background-color: #791F00;
+            padding: 25px 0;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+            margin: 0 auto;
+            /* Agregar esta línea */
+            text-align: center;
+        }
+
+        #formulario-producto {
+            display: block;
+            margin: 0 auto;
+            max-width: 220px;
+            /* Agregar esta línea para limitar el ancho del formulario */
+            align-items: center;
+        }
+
+        #contenedor-formulario label {
+            margin-bottom: 5px;
+        }
+
+        #contenedor-formulario input,
+        #contenedor-formulario textarea {
+            margin-bottom: 10px;
+        }
+
+        .ingresar,
+        textarea {
+            display: block !important;
+            margin: 0 0 25px !important;
+            width: 100% !important;
+            /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+            height: 25px !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            /* Cambiar opacity por rgba */
+            color: #FFFFFF !important;
+            /* Establecer el color del texto en blanco */
+            border-radius: 30px !important;
+            text-align: center !important;
+            border: black !important;
+            resize: none;
+        }
+
+        .ingresar::placeholder {
+            color: white;
+            /* Cambiar el color del placeholder */
+            opacity: .5;
+        }
+
+        textarea::placeholder {
+            color: white;
+            /* Cambiar el color del placeholder */
+            opacity: .5;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button[type="submit"],
+        button[type="button"] {
+            padding: 8px 16px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            width: 100px;
+        }
+
+        .modal_eliminar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Fondo oscuro semitransparente */
+            z-index: 9998;
+            /* Asegurarse de que el modal esté por encima del resto del contenido */
+        }
+
+        .modal_modificar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Fondo oscuro semitransparente */
+            z-index: 9999;
+            /* Asegurarse de que el modal esté por encima del resto del contenido */
+        }
+
+        .modal_error {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Fondo oscuro semitransparente */
+            z-index: 9997;
+            /* Asegurarse de que el modal esté por encima del resto del contenido */
+        }
+
+        .modal-contenido {
+            font-family: 'Magra', sans-serif !important;
+            width: 340px !important;
+            height: 120px !important;
+            background-color: #791F00 !important;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important;
+            position: absolute !important;
+            top: 50% !important;
+            /* Centrar verticalmente */
+            left: 50% !important;
+            /* Centrar horizontalmente */
+            transform: translate(-50%, -50%) !important;
+            /* Centrar con transform */
+            padding: 20px !important;
+            text-align: center !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            border: solid black !important;
+        }
+
+        .modal-contenido p {
+            color: white;
+            font-size: 15px;
+            margin-top: 50px;
+        }
+
+        .modal-cerrar {
+            width: 100%;
+            height: 35px;
+            display: flex;
+            justify-content: flex-end;
+            /* Alinear el contenido al final del div */
+            background-color: white;
+            position: absolute;
+            /* Establecer posición absoluta */
+            top: 0;
+            /* Anclar el div en la parte superior del modal */
+            left: 0;
+            /* Anclar el div a la izquierda del modal */
+            padding: 2px;
+            /* Añadir un espacio interno de 10px */
+            box-sizing: border-box;
+            /* Incluir el padding en el ancho total del div */
+            border-bottom: solid black;
+        }
+
+
+        .modal-cerrar img {
+            width: 40px;
+            height: 30px;
+            cursor: pointer;
+
+        }
+
+        .botones-modal {
+            display: inline-block;
+            border-radius: 10px;
+            background-color: white;
+            color: black;
+            margin-bottom: 15px;
+            padding: 4px 6px;
+            border: 0;
+        }
+
+        .filtro {
+            width: 17px;
+            height: 17px;
+            float: right;
+            margin-right: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        label {
+            font-size: 12px;
+            font-family: 'Magra', sans-serif;
+        }
+
+        #cerrarmodal {
+            width: 50px;
+            height: 40px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="contenido">
+            <h1>Inventario</h1>
+            <div class="contenedor_buscar">
+                <img src="/media/buscar.png" alt="" onclick="buscarProductos()">
+                <div class="buscar">
+                    <form id="form-buscar" action="/inventario" method="GET">
+                        <input id="input-buscar" type="text" name="q" placeholder="Buscar"
+                            value="{{ query|default:'Buscar' }}">
+                    </form>
+                </div>
+            </div>
+
+            <div id="tabla-container">
+                <table id="tabla-productos">
+                    <thead>
+                        <form action="/filters" method="get">
+                            <tr>
+                                {% csrf_token %}
+                                <th style="width: 12%;">ID Producto <img class="filtro" src="/media/filtro.png"
+                                        alt=""><input class="ingresarf" type="number" name="id_producto"
+                                        style="display: none; border-radius: 20px; width: 90%; padding-left: 10px; background-color: white; height: 25px;">
+                                </th>
+                                <th style="width: 12%;">Nombre <img class="filtro" src="/media/filtro.png" alt=""><input
+                                        class="ingresarf" type="text" name="nombre"
+                                        style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;background-color: white; height: 25px;">
+                                </th>
+                                <th style="width: 20%;">Descripcion <img class="filtro" src="/media/filtro.png"
+                                        alt=""><input class="ingresarf" type="text" name="descripcion"
+                                        style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;background-color: white; height: 25px;">
+                                </th>
+                                <th style="width: 20%;">Categoria <img class="filtro" src="/media/filtro.png"
+                                        alt=""><input class="ingresarf" type="text" name="categoria"
+                                        style="display: none; border-radius: 20px; width: 90%; padding-left: 10px; background-color: white; height: 25px;">
+                                </th>
+                                <th style="width: 12%;">Cantidad <img class="filtro" src="/media/filtro.png"
+                                        alt=""><input class="ingresarf" type="number" name="cantidad"
+                                        style="display: none; border-radius: 20px; width: 90%; padding-left: 10px; background-color: white; height: 25px;">
+                                </th>
+                                <th style="width: 12%;">Precio <img class="filtro" src="/media/filtro.png" alt=""><input
+                                        class="ingresarf" type="number" name="precio"
+                                        style="display: none; border-radius: 20px; width: 90%; padding-left: 10px; background-color: white; height: 25px;">
+                                </th>
+                                <th style="width: 12%;"><button type="submit" type="submit"
+                                        style="width: 120px; padding: 4px 8px;">Aplicar filtros</button></th>
+                                <th style="width: 12%;"><button type="submit"
+                                        style="width: 120px; padding: 4px 8px;">Quitar filtros</button></th>
+                            </tr>
+                        </form>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{ producto.id_producto }}</td>
+                            <td>{{ producto.nombre }}</td>
+                            <td>{{ producto.descripcion }}</td>
+                            <td>{{ producto.categoria }}</td>
+                            <td>{{ producto.cantidad }}</td>
+                            <td>{{ producto.precio }}</td>
+                            <td>
+                                <div class="acciones">
+                                    <a class="editar" data-id="{{ producto.id }}"><img class="imagenes"
+                                            src="/media/modificar_tabla.svg" alt="">Editar</a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acciones">
+                                    <a class="eliminar" data-id="{{ producto.id }}"><img class="imagenes"
+                                            src="/media/eliminar_tablas.png" alt=""> Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">No se encontraron resultados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <div id="modal_eliminar" class="modal_eliminar">
+        <div class="modal-contenido">
+            <div class="modal-cerrar">
+                <img src="/media/cerrar.png" id="miImagen" alt="cerrar" onclick="cerrarModalEliminar()">
+            </div>
+            <form id="formulario-eliminar" method="post" action="/eliminar_producto/">
+                {% csrf_token %}
+                <p>¿Está seguro que desea eliminar el producto?</p>
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <input type="hidden" name="id_producto" id="producto_id_eliminar" value="">
+                <button type="submit" class="botones-modal" id="finalizar_btn">Eliminar</button>
+            </form>
+        </div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="form_contenido">
+            <div style="width: 100%; text-align: center;">
+                <h1 style="font-size: 35px; padding-bottom: 5px;">Modificar producto</h1>
+                <img src="/media/cerrar.png" id="cerrarmodal" alt="cerrar">
+                <div id="contenedor-formulario">
+                    <form id="formulario-producto" method="post" action="/updateproducto/"
+                        enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" id="id" name="id" placeholder="ID" required>
+                        <label for="id_producto">ID Producto:</label>
+                        <input class="ingresar" type="text" id="id_producto" name="id_producto" required
+                            placeholder="ID producto">
+                        <label for="nombre">Nombre:</label>
+                        <input class="ingresar" type="text" id="nombre" name="nombre" required placeholder="Nombre">
+                        <label for="precio">Precio:</label>
+                        <input class="ingresar" type="number" id="precio" name="precio" required placeholder="Precio">
+                        <label for="cantidad">Cantidad:</label>
+                        <input class="ingresar" type="number" id="cantidad" name="cantidad" required
+                            placeholder="Cantidad">
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" required placeholder="Descripción"></textarea>
+                        <label for="categoria">Categoría:</label>
+                        <input class="ingresar" type="text" id="categoria" name="categoria" required
+                            placeholder="Categoría">
+                        <input type="hidden" id="producto_id" name="producto_id" value="">
+                        <button type="submit" >Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal_modificar" class="modal_modificar">
+        <div class="modal-contenido">
+            <div class="modal-cerrar">
+                <img src="/media/cerrar.png" id="miImagen" alt="cerrar" onclick="cerrarModal()">
+            </div>
+            <div>
+                <p>Producto modificado correctamente!</p>
+                <button type="button" onclick="cerrarModal()">Finalizar</button>
+            </div>
+
+        </div>
+    </div>
+    <div id="modal_error" class="modal_error">
+        <div class="modal-contenido">
+            <div class="modal-cerrar">
+                <img src="/media/cerrar.png" id="miImagen" alt="cerrar" onclick="cerrarModal()">
+            </div>
+            <div>
+                <p>Error, ingresó datos invalidos!</p>
+                <button type="button" onclick="cerrarModal()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    //modales de modificar
+    function abrirModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = 'block';
+    }
+
+    function cerrarModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = 'none';
+        // Restablecer el formulario u otras acciones necesarias al cerrar el modal
+    }
+
+
+
+
+
+
+
+
+    document.getElementById("btn-back").addEventListener("click", function (event) {
+        event.preventDefault(); // Evita que el enlace navegue a la página principal
+        window.location.replace('/interfaz_venta/'); // Redirige a la página de registro de productos sin agregar una entrada al historial
+    });
+    //efecto label y placeholder
+    const inputIdProducto = document.getElementById('id_producto');
+    const labelId = document.getElementById('label-id');
+
+    inputIdProducto.addEventListener('input', function () {
+        if (this.value.trim() === '') {
+            labelId.style.display = 'none';
+        } else {
+            labelId.style.display = 'block';
+        }
+    });
+
+    //buscador
+    function buscarProductos() {
+        document.getElementById("form-buscar").submit();
+    }
+
+    document.getElementById("input-buscar").addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            buscarProductos();
+        }
+    });
+
+
+    //AREA DE FILTROS
+    // Obtener todos los elementos con la clase "filtro"
+    var filtros = document.getElementsByClassName("filtro");
+
+    // Recorrer todos los elementos y agregar un evento de clic a cada uno
+    for (var i = 0; i < filtros.length; i++) {
+        filtros[i].addEventListener("click", mostrarInput);
+    }
+
+    // Función para mostrar u ocultar el campo de entrada al hacer clic en el filtro
+    function mostrarInput() {
+        var input = this.nextElementSibling; // Obtener el siguiente elemento después del ícono de filtro
+
+        if (input.style.display === "block") {
+            input.style.display = "none"; // Si ya está visible, ocultarlo
+        } else {
+            input.style.display = "block"; // Si está oculto, mostrarlo
+        }
+    }
+
+    var eliminarBtns = document.querySelectorAll('.btn_delete');
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //AREA DE MODIFICAR PRODUCTO
+    // Función para abrir el modal de edición
+    function abrirModalEditar(event) {
+        event.preventDefault();
+        const productoId = event.target.dataset.id;
+        console.log('Producto ID:', productoId);
+
+        // Realizar una solicitud AJAX para obtener el producto por su ID
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `/obtener_producto/${productoId}/`, true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    const producto = JSON.parse(xhr.responseText);
+                    console.log('Producto:', producto);
+                    if (producto && producto.producto) {
+                        const formularioProducto = document.getElementById("formulario-producto");
+                        formularioProducto.id.value = producto.producto.id;
+                        formularioProducto.id_producto.value = producto.producto.id_producto;
+                        formularioProducto.nombre.value = producto.producto.nombre;
+                        formularioProducto.precio.value = producto.producto.precio;
+                        formularioProducto.cantidad.value = producto.producto.cantidad;
+                        formularioProducto.descripcion.value = producto.producto.descripcion;
+                        formularioProducto.categoria.value = producto.producto.categoria;
+
+                        const modal = document.getElementById("modal");
+                        modal.style.display = "block";
+                    } else {
+                        console.error('No se encontró el producto');
+                    }
+                } else {
+                    console.error('Error al obtener el producto');
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // Función para cerrar el modal de edición
+    function cerrarModalEditar() {
+        const modal = document.getElementById("modal");
+        modal.style.display = "none";
+    }
+
+    // Función para actualizar el producto
+    function actualizarProducto() {
+        const formularioProducto = document.getElementById("formulario-producto");
+        const formData = new FormData(formularioProducto);
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+        const productoId = formularioProducto.id_producto.value; // Obtener el id del producto del campo "id_producto"
+
+        // Validar que el campo id_producto tenga un valor válido
+        if (!productoId) {
+            console.error('El campo id_producto está vacío');
+            return;
+        }
+
+        // Realizar una petición AJAX para actualizar el producto
+        const xhr = new XMLHttpRequest();
+
+        xhr.open("POST", `/updateproducto/`, true);
+        // Pasar el id en la URL
+        xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Producto actualizado con éxito
+                    cerrarModalEditar();
+                    // Puedes realizar cualquier otra acción necesaria después de actualizar el producto
+                } else {
+                    // Error al actualizar el producto
+                    console.error("Error al actualizar el producto");
+                }
+            }
+        };
+
+        xhr.send(formData);
+    }
+
+
+    // Agregar eventos a los botones relevantes
+    document.addEventListener("DOMContentLoaded", function () {
+        const editarButtons = document.querySelectorAll(".editar");
+        const guardarBtn = document.querySelector("#formulario-producto button[type='submit']");
+        const cerrarModalBtn = document.querySelector("#cerrarModalBtn");
+
+        editarButtons.forEach(function (button) {
+            button.addEventListener("click", abrirModalEditar);
+        });
+
+        guardarBtn.addEventListener("click", actualizarProducto);
+        cerrarModalBtn.addEventListener("click", cerrarModalEditar);
+    });
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    //AREA DE ELIMINAR PRODUCTO
+    // Función para abrir el modal de eliminación
+    function abrirModalEliminar(event) {
+        event.preventDefault();
+        const productoId = event.target.dataset.id;
+        console.log(productoId); // Agregado para verificar el valor del ID del producto
+        const modalEliminar = document.getElementById("modal_eliminar");
+        modalEliminar.style.display = "block";
+        // Guardar el id del producto en un campo oculto dentro del modal
+        const productoIdInput = modalEliminar.querySelector("#producto_id_eliminar");
+        productoIdInput.value = productoId;
+    }
+
+    // Función para cerrar el modal de eliminación
+    function cerrarModalEliminar() {
+        const modalEliminar = document.getElementById("modal_eliminar");
+        modalEliminar.style.display = "none";
+    }
+
+    // Función para eliminar el producto
+    function eliminarProducto() {
+        const productoIdInput = document.querySelector("#producto_id_eliminar");
+        const productoId = productoIdInput.value;
+
+        const formData = new FormData();
+        formData.append("id_producto", productoId);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/eliminar_producto/", true);
+        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.mensaje) {
+                        cerrarModalEliminar();
+                        const filaEliminar = document.querySelector(`tr[data-id="${productoId}"]`);
+                        if (filaEliminar) {
+                            filaEliminar.remove();
+                        }
+                        // Redirigir al usuario a la página del inventario
+                        window.location.href = "/inventario";  // Reemplaza 'ruta_del_inventario' con la ruta correcta a tu vista de inventario
+                    } else {
+                        console.error("Error al eliminar el producto");
+                    }
+                } else {
+                    console.error("Error al eliminar el producto");
+                }
+            }
+        };
+
+        xhr.send(formData);
+    }
+
+
+
+
+    // Agregar eventos a los botones y enlaces relevantes
+    document.addEventListener("DOMContentLoaded", function () {
+        const contenedoresAcciones = document.querySelectorAll(".acciones");
+
+        contenedoresAcciones.forEach(function (contenedor) {
+            contenedor.addEventListener("click", function (event) {
+                const elementoClicado = event.target;
+                const esEliminar = elementoClicado.classList.contains("eliminar");
+
+                if (esEliminar) {
+                    // Lógica para abrir el modal de eliminación
+                    abrirModalEliminar(event);
+                }
+            });
+        });
+    });
+
+    var cerrarModalBtn = document.getElementById("cerrarmodal");
+
+    // Agregar un evento de clic al botón de cierre del modal
+    cerrarModalBtn.addEventListener("click", function () {
+        // Ocultar el modal al hacer clic en el botón de cierre
+        var modal = document.getElementById("modal");
+        modal.style.display = "none";
+    });
+</script>
+
+{% endblock %}

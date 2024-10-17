@@ -1,0 +1,408 @@
+{% extends "base_m.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos de la tabla */
+        /* Estilos del contenedor de la tabla */
+        .contenido {
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            font-family: 'Magra', sans-serif;
+
+        }
+
+        .contenido h1 {
+            font-size: 35px;
+            margin-bottom: 50px;
+        }
+
+        #tabla-container {
+            width: 100%;
+            margin: 0 auto;
+            /* Centrar horizontalmente */
+        }
+
+        /* Estilos de la tabla */
+        #tabla-productos {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #tabla-productos th {
+            background-color: #001514;
+            color: white;
+            font-size: 16px;
+        }
+
+        #tabla-productos td {
+            font-size: 16px;
+        }
+
+        #tabla-productos th,
+        #tabla-productos td {
+            border: 1px solid black;
+            padding: 8px 2px;
+            text-align: center;
+        }
+
+        .filtro{
+            width: 17px;
+            height: 17px;
+            float: right;
+            margin-right: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        /* Estilos para los campos de entrada */
+        #tabla-productos input {
+            width: 100%;
+            height: 25px;
+            margin-top: 3px;
+            float: right;
+            background-color: white;
+        }
+        .acciones {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .imagenes {
+            width: 20px;
+            height: 20px;
+        }
+
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            /* Fondo oscuro semitransparente */
+            z-index: 9999;
+            /* Asegurarse de que el modal esté por encima del resto del contenido */
+            height: 40vh;
+        }
+
+        .form_contenido {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40vh;
+            background-color: white;
+            font-family: 'Magra', sans-serif;
+        }
+
+        #contenedor-formulario {
+            background-color: #001514 ;
+            padding: 25px 0;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            width: 100%;
+            margin: 0 auto;
+            /* Agregar esta línea */
+            text-align: center;
+        }
+
+        #formulario-producto {
+            display: block;
+            margin: 0 auto;
+            max-width: 220px;
+            /* Agregar esta línea para limitar el ancho del formulario */
+            align-items: center;
+        }
+
+        .ingresar {
+            display: block !important;
+            margin: 0 0 25px !important;
+            width: 100% !important;
+            /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+            height: 25px !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            /* Cambiar opacity por rgba */
+            color: #FFFFFF !important;
+            /* Establecer el color del texto en blanco */
+            border-radius: 30px !important;
+            text-align: center !important;
+            border: black !important;
+            resize: none;
+        }
+
+        .ingresar::placeholder {
+            color: white;
+            /* Cambiar el color del placeholder */
+            opacity: .5;
+        }
+
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button[type="submit"] {
+            padding: 8px 16px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            width: 100px;
+            font-family: 'Magra', sans-serif;
+            font-size: 15px;
+        }
+
+        .modal-contenido {
+        font-family: 'Magra', sans-serif;
+        width: 400px;
+        height: 130px;
+        background-color: #001514;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50%; /* Centrar verticalmente */
+        left: 50%; /* Centrar horizontalmente */
+        transform: translate(-50%, -50%); /* Centrar con transform */
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: solid black;
+      }
+  
+      .modal-contenido p{
+        color: white;
+        font-size: 15px;
+        margin-top: 50px;
+      }
+  
+      .modal-cerrar{
+        width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: flex-end; /* Alinear el contenido al final del div */
+        background-color: white;
+        position: absolute; /* Establecer posición absoluta */
+        top: 0; /* Anclar el div en la parte superior del modal */
+        left: 0; /* Anclar el div a la izquierda del modal */
+        padding: 2px; /* Añadir un espacio interno de 10px */
+        box-sizing: border-box; /* Incluir el padding en el ancho total del div */
+        border-bottom: solid black;
+      }
+  
+  
+      .modal-cerrar img{
+        width: 40px;
+        height: 30px;
+        cursor: pointer;
+        
+      }
+  
+      .botones-modal{
+        display: inline-block;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        margin-bottom: 15px;
+        padding: 4px 6px;
+        border: 0;
+        font-size: 13px;
+        font-family: 'Magra', sans-serif;
+        width: 100px;
+        cursor: pointer;
+      }
+
+      #messages a{
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+        padding: 0 10px;
+
+      }
+      
+      #cerrarmodal {
+        width: 50px;
+        height: 40px;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+       }
+       
+       .acciones {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="contenido">
+            <h1>Historial membresias</h1>
+            <div id="tabla-container">
+                <table id="tabla-productos">
+                    <thead>
+                       <form action="/filtros" method="get">
+                        <tr>
+                            {% csrf_token %}
+                            <th style="width: 12%;">ID pago <img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="idpago" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;"></th>
+                            <th style="width: 12%;">Id usuario <img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="usuario" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;"></th>
+                            <th style="width: 20%;">fecha ùltimo pago <img class="filtro" src="/media/filtro.png" alt=""><input type="date" name="ultimopago" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;" ></th>
+                            <th style="width: 20%;">fecha Limite <img class="filtro" src="/media/filtro.png" alt=""><input type="date" name="fechalimita" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;"></th>
+                            <th style="width: 12%;">precio <img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="precio" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;">
+                            <th style="width: 12%;"><button type="submit" type="submit" style="width: 120px; padding: 4px 8px;">Aplicar filtros</button></th>
+                            <th style="width: 12%;"><button type="submit" style="width: 120px; padding: 4px 8px;">Quitar filtros</button></th>
+                        </tr>
+                        </form>
+                    </thead>
+                    <tbody>
+                        {% for pago in pagos %}
+                        <tr>
+                            <td class="fila_pago">{{ pago.id }}</td>
+                            <td>{{ pago.id_cliente  }}</td>
+                            <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+                            <td>{{ pago.fecha_limite|date:"d/m/Y" }}</td>
+                            <td>{{ pago.precio_pago }}</td>
+                            <td>
+                                <img src="/media/power.png" style="width: 90px; height: 25px;" alt="">
+                                <div class="acciones modificar" data_idpago="{{ pago.id }}" style="display: none;">
+                                    <img class="imagenes" src="/media/modificar_tabla.svg" alt=""> Editar
+                                </div>
+                            </td>
+                            <td>
+                                <img src="/media/palace.png" style="width: 90px; height: 25px;" alt="">
+                                <div class="acciones btn_delete" data_idz="{{pago.id}}" style="display: none;">
+                                    <img class="imagenes" src="/media/eliminar_tablas.png" alt=""> Eliminar
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                    </div>
+                    </div>
+                    </main>
+                    
+                    {% for message in messages %}
+                    <div class="ventana" id="miVentana" style="position: absolute; top: 325px; left: 50%; z-index: 9999;"></div>
+                    <div class="modal-contenido">
+                        <div class="modal-cerrar">
+                            <a href="/historial"><img src="/media/cerrar.png" id="cerrar" alt="cerrar"></a>
+                        </div>
+                        <p id="messages">{{ message }}</p>
+                        <a href="/historial"><button class="botones-modal">Finalizar</button></a>
+                    </div>
+                    </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div id="modal" class="modal">
+                    <div class=form_contenido>
+                        <div style="width: 100%; text-align: center;">
+                            <h1 style="font-size: 35px; padding-bottom: 5px;">Modificar historial</h1>
+                            <img src="/media/cerrar.png" id="cerrarmodal" alt="cerrar">
+                            <div id="contenedor-formulario">
+                                <form id="formulario-producto" action="/modificar_historial/" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="number" id="id_pago" name="id_pago" value="" style="display: none;">
+                                    <input class="ingresar" type="number" id="id_cliente" name="cliente" required required placeholder="ID cliente">
+                                    <input class="ingresar" type="number" id="costo_pago" name="pago" required placeholder="pago">
+                                    <button class="guardar" type="submit">Guardar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </body>
+{% endblock content%}
+
+{% block js %}
+<script>
+    // Obtener todos los elementos con la clase "filtro"
+    var filtros = document.getElementsByClassName("filtro");
+
+    // Recorrer todos los elementos y agregar un evento de clic a cada uno
+    for (var i = 0; i < filtros.length; i++) {
+        filtros[i].addEventListener("click", mostrarInput);
+    }
+
+    var cerrarModalBtn = document.getElementById("cerrarmodal");
+
+    // Agregar un evento de clic al botón de cierre del modal
+    cerrarModalBtn.addEventListener("click", function() {
+        // Ocultar el modal al hacer clic en el botón de cierre
+        var modal = document.getElementById("modal");
+        modal.style.display = "none";
+    });
+
+    // Función para mostrar u ocultar el campo de entrada al hacer clic en el filtro
+    function mostrarInput() {
+        var input = this.nextElementSibling; // Obtener el siguiente elemento después del ícono de filtro
+
+        if (input.style.display === "block") {
+            input.style.display = "none"; // Si ya está visible, ocultarlo
+        } else {
+            input.style.display = "block"; // Si está oculto, mostrarlo
+        }
+    }
+
+    var eliminarBtns = document.querySelectorAll('.btn_delete');
+
+    // Recorrer todos los elementos y agregar un evento de clic a cada uno
+    eliminarBtns.forEach(function(el) {
+        el.addEventListener('click', function(e) {
+            e.preventDefault();
+            var dataIdz = el.getAttribute("data_idz");
+            var direccion = '/eliminarpago';
+            $.ajax({
+                url: direccion,
+                data: { 'data_idz': dataIdz },
+                success: function(response) {
+                    // Realizar acciones después de recibir una respuesta exitosa
+                    window.location.href = '/historial';
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    // Manejar el error de la petición AJAX
+                }
+            });
+        });
+    });
+
+    var btnModificar = document.querySelectorAll('.modificar');
+
+    btnModificar.forEach(function(el) {
+        el.addEventListener('click', function() {
+            var modal = document.getElementById("modal");
+            modal.style.display = "block";
+            document.getElementById("id_cliente").focus();
+
+            var idPago = el.getAttribute("data_idpago");  // Obtener el valor de data_idpago
+
+            document.getElementById("id_pago").value = idPago;  // Asignar el valor al campo de entrada con ID id_pago
+        });
+    });
+
+</script>
+    {% endblock js %}

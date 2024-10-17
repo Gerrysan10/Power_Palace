@@ -1,0 +1,268 @@
+{% extends "base_m.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    .user_card {
+        width: 370px;
+        height: 370px;
+        margin-top: auto;
+        margin-bottom: auto;
+        background: #001514;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 10px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 20px;
+
+    }
+
+    .form_container {
+        margin-top: 20px;
+    }
+
+    #form-title {
+        color: #fff;
+        font-family: marko-one;
+
+    }
+
+    .login_btn {
+        width: 100%;
+        background: #fff !important;
+        color: black !important;
+        margin-top: 30px;
+        border-radius: 20px;
+    }
+
+    .login_btn:focus {
+        box-shadow: none !important;
+        outline: 0px !important;
+    }
+
+    .login_container {
+        padding: 0 2rem;
+    }
+
+    .input-group-text {
+        background: #001514 !important;
+        color: white !important;
+        border: 0 !important;
+        border-radius: 0.25rem 0 0 0.25rem !important;
+    }
+
+    .form-control {
+        border-radius: 20px;
+        background-color: #fff;
+        opacity: 80%;
+
+    }
+
+    .form-control:focus {
+        background-color: #fff;
+        opacity: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 80px;
+    }
+
+    .main {
+        list-style: none;
+        margin: 1em;
+        display: grid;
+        gap: 20px;
+        grid-auto-flow: dense;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        justify-content: center;
+        /* Centra los elementos horizontalmente */
+    }
+
+    .botones {
+        text-decoration: none;
+        border-radius: 20px;
+        background-color: #fff;
+        width: 120px;
+        height: 30px;
+    }
+
+    .botones.wide {
+        grid-row: 2;
+        /* Hace que el botón "Pagar" ocupe la segunda fila */
+    }
+
+    .botones {
+        cursor: pointer;
+    }
+
+    .separados {
+        display: flex;
+        justify-content: space-evenly;
+        margin-top: 20px;
+    }
+
+    .centrado {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .textarea {
+        display: block !important;
+        margin: 0 0 25px !important;
+        width: 70% !important;
+        /* Modificar esta línea para que los inputs y textarea ocupen el ancho completo del formulario */
+        height: 30px !important;
+        background-color: rgba(255, 255, 255, 0.3) !important;
+        /* Cambiar opacity por rgba */
+        color: #FFFFFF !important;
+        /* Establecer el color del texto en blanco */
+        border-radius: 30px !important;
+        text-align: center !important;
+        border: black !important;
+        resize: none;
+    }
+
+    .textposi {
+        display: flex;
+        justify-content: center;
+        margin-top: 25%;
+    }
+    
+    .mensaje{
+        display: block;
+        position: absolute;
+        top: 33%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+    }
+
+    .datos{
+        font-family: "Magra", sans-serif;
+        font-size: 13px;
+    }
+
+    .modal-contenido {
+        font-family: 'Magra', sans-serif;
+        width: 400px;
+        height: 150px;
+        background-color: #001514;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50%; /* Centrar verticalmente */
+        left: 50%; /* Centrar horizontalmente */
+        transform: translate(-50%, -50%); /* Centrar con transform */
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: solid black;
+      }
+  
+      .modal-contenido p{
+        color: white;
+        font-size: 15px;
+        margin-top: 50px;
+      }
+  
+      .modal-cerrar{
+        width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: flex-end; /* Alinear el contenido al final del div */
+        background-color: white;
+        position: absolute; /* Establecer posición absoluta */
+        top: 0; /* Anclar el div en la parte superior del modal */
+        left: 0; /* Anclar el div a la izquierda del modal */
+        padding: 2px; /* Añadir un espacio interno de 10px */
+        box-sizing: border-box; /* Incluir el padding en el ancho total del div */
+        border-bottom: solid black;
+      }
+  
+  
+      .modal-cerrar img{
+        width: 40px;
+        height: 30px;
+        cursor: pointer;
+        
+      }
+</style>
+
+{% if aviso %}
+<div class="ventana" id="miVentana" style="position: absolute; top: 325px; left: 50%; z-index: 9999;">
+  <div class="modal-contenido">
+    <div class="modal-cerrar">
+      <a href=""><img src="/media/cerrar.png" id="cerrar" alt="cerrar"></a>
+    </div>
+    <p id="messages">{{ aviso }}</p>
+  </div>
+</div>      
+</div>
+{% endif %} 
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6 col-lg-4">
+                <div class="card user_card p-3">
+                    <div class="card-body">
+                        <h3 id="form-title" class="text-center mb-4" style="display: flex; justify-content: center; position: absolute;left: 15%; top: 10%;">Verificación de ID</h3>
+                        {% if mensaje %}
+                            <div class="mensaje">{{ mensaje|safe }}</div>
+                        {% endif %}
+                        <form action="/verificar_usuario" method="get">
+                            {% csrf_token %}
+                            <div class="textposi">
+                                <input type="number" name="nombre_o_id" placeholder="ID del usuario:" id="nombre_o_id" class="textarea" style="width: 150px;">
+                            </div>
+                            <div class="separados">
+                                <input type="submit" value="Verificar" class="botones">
+                                <a href="/registrar_usuarios"><input type="button" value="Registrar" class="botones"></a>
+                            </div>
+                            <div class="separados">
+                                    <a href="/pagar_r"><input type="button" value="Pagar" class="botones"></a>
+                                    <a href="/historial"><input type="button" value="historial" class="botones"></a>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    
+{% endblock %}
+
+{% block js %}
+    <script>
+         // Capturar el enlace de cierre
+        var enlaceCerrar = document.getElementById('cerrar');
+        var atencion = document.getElementById('nombre_o_id');
+        atencion.focus()
+        // Agregar el evento click al enlace de cierre
+        enlaceCerrar.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevenir el comportamiento predeterminado del enlace
+        var ventana = document.getElementById('miVentana');
+        ventana.remove(); // Eliminar la ventana de la página
+        });
+    </script>
+{% endblock js %}

@@ -1,0 +1,476 @@
+{% extends "base_v.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link rel="stylesheet" href="reset.css">
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos de la tabla */
+        /* Estilos del contenedor de la tabla */
+        .contenido {
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            font-family: 'Magra', sans-serif;
+        }
+
+        .contenido h1 {
+            font-size: 35px;
+        }
+
+        .contenedor_buscar {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        .contenedor_buscar img {
+            width: 38px;
+            height: 35px;
+            margin: 0 0 0 10px;
+        }
+
+        .buscar {
+            width: 20%;
+            height: 40px;
+            background-color: #E6AF2E;
+            /* padding: 0 14px; */
+            border-radius: 20px;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        #subtotal-container {
+            display: flex;
+            margin-left: 50%;
+        }
+
+        #subtotal-container p {
+            margin-right: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #Total {
+            border: 1px solid;
+            text-align: center;
+            font-size: 30px;
+            border-radius: 20px;
+        }
+
+        input {
+            border: 0;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        input::placeholder {
+            font-weight: bold;
+            color: black;
+            /* Cambiar el color del placeholder */
+            opacity: .8;
+        }
+
+        #tabla-container {
+            width: 70%;
+            margin: 0 auto;
+            /* Centrar horizontalmente */
+        }
+
+        /* Estilos de la tabla */
+        #tabla-productos {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #tabla-productos th {
+            background-color: #A3320B;
+            color: white;
+            font-size: 16px;
+        }
+
+        #tabla-productos td {
+            font-size: 16px;
+        }
+
+        #tabla-productos th,
+        #tabla-productos td {
+            border-top: 1px solid black;
+            padding: 8px 2px;
+            text-align: center;
+        }
+
+        .acciones {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .imagenes {
+            width: 30px;
+            height: 30px;
+        }
+
+        .btnpago {
+            margin-top: 60px;
+        }
+
+        .pago {
+            font-size: 16px;
+            padding: 12px 60px;
+            border-radius: 20px;
+            border: 0;
+            width: 200px;
+            background-color: #E6AF2E;
+            cursor: pointer;
+            color: black;
+        }
+
+        .cancelarbtn {
+            font-size: 16px;
+            padding: 12px 60px;
+            border-radius: 20px;
+            border: 0;
+            width: 200px;
+            background-color: #F54436;
+            cursor: pointer;
+            color: white;
+        }
+
+        .opcion-busqueda {
+            cursor: pointer;
+            padding: 5px;
+            background-color: #E6AF2E;
+            border-bottom: 1px solid #ddd;
+            border-radius: 25px;
+        }
+
+        .opcion-busqueda:hover {
+            background-color: #e9e9e9;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="contenido">
+            <div class="contenedor_buscar">
+                <img src="/media/buscar.png" alt="">
+                <div class="buscar">
+                    <input id="buscador" type="text" placeholder="Buscar">
+                    <div id="opciones-busqueda"></div>
+                </div>
+                <div id="subtotal-container">
+                    <p class="cont">Total</p>
+                    <input type="text" id="Total" value="$0.00" readonly>
+                </div>
+            </div>
+            <div id="tabla-container">
+                <table id="tabla-productos">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Producto</th>
+                            <th style="width: 20%;">Precio</th>
+                            <th style="width: 20%;">Cantidad</th>
+                            <th style="width: 25%;">Subtotal</th>
+                            <th style="width: 10%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body">
+                        <!-- Filas de productos añadidos al carrito -->
+                    </tbody>
+                </table>
+            </div>
+            <p class="btnpago"><a href="/pago" class="pago">Elegir forma de pago</a></p>
+            <p class="btnpago"><a href="/ventas" class="cancelarbtn">Cancelar Compra</a></p>
+        </div>
+    </main>
+
+    <script>
+        function cargarCarritoDesdeLocalStorage() {
+            const carritoString = localStorage.getItem('carrito');
+            if (carritoString) {
+                console.log('Carrito almacenado en localStorage:', carritoString);
+                const carrito = JSON.parse(carritoString);
+                console.log('Carrito parseado:', carrito);
+
+                // Borrar contenido de la tabla
+                tablaProductos.innerHTML = '';
+
+                // Reiniciar el registro de productos en la tabla
+                productosEnTabla = [];
+
+                // Agregar cada producto del carrito a la tabla
+                carrito.productos.forEach(producto => {
+                    agregarProductoTabla(producto);
+                });
+
+                calcularTotal(); // Recalcular el total después de cargar los productos
+            } else {
+                console.log('No se encontró ningún carrito en localStorage.');
+            }
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            tablaProductos.innerHTML = '';
+        });
+
+        const buscador = document.querySelector('#buscador');
+        const opcionesBusqueda = document.querySelector('#opciones-busqueda');
+        const tablaProductos = document.querySelector('#tabla-productos tbody');
+        const TotalInput = document.querySelector('#Total');
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const buscadorInput = document.getElementById("buscador");
+
+            buscadorInput.addEventListener('focus', function () {
+                this.removeAttribute('placeholder');
+            });
+
+            buscadorInput.addEventListener('blur', function () {
+                if (!this.value) {
+                    this.setAttribute('placeholder', 'Buscar');
+                }
+            });
+        });
+
+        buscador.addEventListener('input', () => {
+            const query = buscador.value.trim();
+            if (query.length >= 3) {
+                obtenerOpcionesBusqueda(query)
+                    .then(opciones => {
+                        mostrarOpcionesBusqueda(opciones);
+                    });
+            } else {
+                opcionesBusqueda.innerHTML = '';
+            }
+        });
+
+        buscador.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const query = buscador.value.trim();
+                if (query.length >= 3) {
+                    agregarProductoDefault(query);
+                    buscador.value = '';
+                    buscador.focus();
+                }
+            }
+        });
+
+        const pagobtn = document.querySelector('.pago');
+        const cancelarbtn = document.querySelector('.cancelarbtn');
+
+        pagobtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const total = parseFloat(TotalInput.value.replace('$', ''));
+
+            // Guardar el carrito en localStorage antes de redirigir a la página de pago
+            guardarCarritoEnLocalStorage();
+
+            const info = obtenerProductosCarrito();
+
+            // Ejemplo de redirección a la página de pago con el total y la info como parámetros en la URL
+            var direccion = '/pago/?total=' + encodeURIComponent(total.toFixed(2));
+            $.ajax({
+                url: direccion,
+                data: { 'info': JSON.stringify(info) }, // Convertir info a una cadena JSON
+                success: function (response) {
+                    // Realizar acciones después de recibir una respuesta exitosa
+                    window.location.href = direccion;
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    // Manejar el error de la petición AJAX
+                }
+            });
+        });
+
+        // Obtener las opciones de búsqueda desde el servidor
+        function obtenerOpcionesBusqueda(query) {
+            return fetch(`/buscar_productos/?q=${query}`)
+                .then(response => response.json())
+                .then(data => data.productos);
+        }
+
+        // Mostrar las opciones de búsqueda en el desplegable
+        function mostrarOpcionesBusqueda(opciones) {
+            opcionesBusqueda.innerHTML = '';
+            opciones.forEach(opcion => {
+                const item = document.createElement('div');
+                item.classList.add('opcion-busqueda');
+                item.textContent = opcion.nombre;
+                item.addEventListener('click', () => {
+                    agregarProductoTabla(opcion);
+                    TotalInput.value = '$0.00'; // Establecer el total en $0.00
+                    calcularTotal();
+                    opcionesBusqueda.innerHTML = '';
+                    buscador.value = '';
+                    buscador.focus();
+                });
+                opcionesBusqueda.appendChild(item);
+            });
+        }
+
+        // Agregar un producto al carrito por defecto (cuando se presiona Enter en el buscador)
+        function agregarProductoDefault(query) {
+            obtenerOpcionesBusqueda(query)
+                .then(opciones => {
+                    if (opciones.length > 0) {
+                        const producto = opciones[0];
+                        agregarProductoTabla(producto);
+                        TotalInput.value = '$0.00'; // Establecer el total en $0.00
+                        calcularTotal();
+                    }
+                });
+        }
+
+        // Agregar un producto a la tabla
+        function agregarProductoTabla(producto) {
+            console.log('Producto recibido:', producto);
+
+            if (productoEnTabla(producto.id)) {
+                incrementarCantidadProducto(producto.id);
+                return;
+            }
+
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                                <td><input type="hidden" name="nombre">${producto.nombre}</td>
+                                <td><input type="hidden" name="precio">$${producto.precio.toFixed(2)}</td>
+                                <td><input type="number" name="cantidad" class="cantidad" value="1" min="1" max="${producto.cantidad}"></td>
+                                <td><input type="hidden" name="subtotal">$${producto.precio.toFixed(2)}</td>
+                                <td><button class="btn-eliminar">Eliminar</button></td>
+                                <input type="hidden" name="id_producto" class="id-producto" value="${producto.id}">
+                            `;
+            tablaProductos.appendChild(fila);
+
+            const cantidadInput = fila.querySelector('.cantidad');
+            cantidadInput.addEventListener('input', actualizarSubtotal);
+            calcularTotal();
+            guardarCarritoEnLocalStorage();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const tablaProductos = document.querySelector('#tabla-productos tbody');
+
+            // Evento para eliminar un producto de la tabla
+            tablaProductos.addEventListener('click', (event) => {
+                if (event.target.classList.contains('btn-eliminar')) {
+                    const fila = event.target.closest('tr');
+                    const idProducto = fila.querySelector('.id-producto').value;
+                    fila.remove();
+                    calcularTotal();
+                    actualizarProductosCarrito(idProducto, 0); // Eliminar el producto del carrito
+                    guardarCarritoEnLocalStorage(); // Actualizar el carrito en localStorage
+                }
+            });
+        });
+
+
+
+        // Actualizar el subtotal de la fila
+        function actualizarSubtotal(event) {
+            const cantidadInput = event.target;
+            const fila = cantidadInput.closest('tr');
+            const precio = parseFloat(fila.querySelector('td:nth-child(2)').textContent.slice(1));
+            const cantidad = parseInt(cantidadInput.value);
+            const subtotal = fila.querySelector('td:nth-child(4)');
+            subtotal.textContent = `$${(precio * cantidad).toFixed(2)}`;
+            calcularTotal();
+            guardarCarritoEnLocalStorage(); // Actualizar el carrito en localStorage
+        }
+
+
+        // Verificar si un producto ya está en la tabla
+        function productoEnTabla(idProducto) {
+            const filas = tablaProductos.querySelectorAll('tr');
+            for (let i = 0; i < filas.length; i++) {
+                const id = filas[i].querySelector('.id-producto').value;
+                if (id === idProducto) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Incrementar la cantidad de un producto en la tabla
+        function incrementarCantidadProducto(idProducto) {
+            const filas = tablaProductos.querySelectorAll('tr');
+            for (let i = 0; i < filas.length; i++) {
+                const id = filas[i].querySelector('.id-producto').value;
+                if (id === idProducto) {
+                    const cantidadInput = filas[i].querySelector('.cantidad');
+                    const cantidad = parseInt(cantidadInput.value);
+                    cantidadInput.value = cantidad + 1;
+                    actualizarSubtotal({ target: cantidadInput });
+                    return;
+                }
+            }
+        }
+
+        // Calcular el total de la compra
+        function calcularTotal() {
+            const filas = tablaProductos.querySelectorAll('tr');
+            let total = 0;
+            filas.forEach(fila => {
+                const precio = parseFloat(fila.querySelector('td:nth-child(2)').textContent.slice(1));
+                const cantidad = parseInt(fila.querySelector('.cantidad').value);
+                const subtotal = precio * cantidad;
+                fila.querySelector('td:nth-child(4)').textContent = `$${subtotal.toFixed(2)}`;
+                total += subtotal;
+            });
+            TotalInput.value = total === 0 ? "$0.00" : `$${total.toFixed(2)}`;
+        }
+
+        // Guardar el carrito en localStorage
+        function guardarCarritoEnLocalStorage() {
+            const carrito = obtenerProductosCarrito();
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+        }
+
+        function obtenerProductosCarrito() {
+            const filas = tablaProductos.querySelectorAll('tr');
+            const carrito = [];
+            const fechaCompra = new Date();
+
+            filas.forEach(fila => {
+                const idProducto = fila.querySelector('.id-producto').value;
+                const nombreProducto = fila.querySelector('td:nth-child(1)').textContent;
+                const precioProducto = parseFloat(fila.querySelector('td:nth-child(2)').textContent.slice(1));
+                const cantidadProducto = parseInt(fila.querySelector('.cantidad').value);
+                const subtotalProducto = parseFloat(fila.querySelector('td:nth-child(4)').textContent.slice(1));
+
+                carrito.push({
+                    id_producto: idProducto,
+                    nombre: nombreProducto,
+                    precio: precioProducto,
+                    cantidad: cantidadProducto,
+                    subtotal: subtotalProducto
+                });
+            });
+
+            const compra = {
+                fecha: fechaCompra.getFullYear() + '-' + (fechaCompra.getMonth() + 1) + '-' + fechaCompra.getDate(),
+                total: TotalInput.value
+            };
+
+            return {
+                compra,
+                productos: carrito
+            };
+        }
+
+        function eliminarCarritoLocalStorage() {
+            localStorage.removeItem('carrito');
+        }
+        cancelarbtn.addEventListener('click', eliminarCarritoLocalStorage);
+    </script>
+
+    {% endblock %}

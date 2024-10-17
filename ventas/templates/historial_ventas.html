@@ -1,0 +1,278 @@
+{% extends "base_v.html" %}
+{% load static %}
+
+{% block content %}
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Magra&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos de la tabla */
+        /* Estilos del contenedor de la tabla */
+        .contenido {
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            font-family: 'Magra', sans-serif;
+
+        }
+
+        .contenido h1 {
+            font-size: 35px;
+            margin-bottom: 50px;
+        }
+
+        #tabla-container {
+            width: 100%;
+            margin: 0 auto;
+            /* Centrar horizontalmente */
+        }
+
+        /* Estilos de la tabla */
+        #tabla-productos {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #tabla-productos th {
+            background-color: #A3320B;
+            color: white;
+            font-size: 16px;
+        }
+
+        #tabla-productos td {
+            font-size: 16px;
+        }
+
+        #tabla-productos th,
+        #tabla-productos td {
+            border: 1px solid black;
+            padding: 8px 2px;
+            text-align: center;
+        }
+
+        .filtro{
+            width: 17px;
+            height: 17px;
+            float: right;
+            margin-right: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        /* Estilos para los campos de entrada */
+        #tabla-productos input {
+            width: 100%;
+            height: 25px;
+            margin-top: 3px;
+            float: right;
+            background-color: white;
+        }
+        .acciones {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .imagenes {
+            width: 20px;
+            height: 20px;
+        }
+
+        
+       
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button[type="submit"] {
+            padding: 8px 16px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 30px;
+            width: 100px;
+            font-family: 'Magra', sans-serif;
+            font-size: 15px;
+        }
+
+        .modal-contenido {
+        font-family: 'Magra', sans-serif;
+        width: 400px;
+        height: 130px;
+        background-color: #A3320B;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 50%; /* Centrar verticalmente */
+        left: 50%; /* Centrar horizontalmente */
+        transform: translate(-50%, -50%); /* Centrar con transform */
+        padding: 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: solid black;
+      }
+  
+      .modal-contenido p{
+        color: white;
+        font-size: 15px;
+        margin-top: 50px;
+      }
+  
+      .modal-cerrar{
+        width: 100%;
+        height: 35px;
+        display: flex;
+        justify-content: flex-end; /* Alinear el contenido al final del div */
+        background-color: white;
+        position: absolute; /* Establecer posición absoluta */
+        top: 0; /* Anclar el div en la parte superior del modal */
+        left: 0; /* Anclar el div a la izquierda del modal */
+        padding: 2px; /* Añadir un espacio interno de 10px */
+        box-sizing: border-box; /* Incluir el padding en el ancho total del div */
+        border-bottom: solid black;
+      }
+  
+  
+      .modal-cerrar img{
+        width: 40px;
+        height: 30px;
+        cursor: pointer;
+        
+      }
+  
+      .botones-modal{
+        display: inline-block;
+        border-radius: 10px;
+        background-color: white;
+        color: black;
+        margin-bottom: 15px;
+        padding: 4px 6px;
+        border: 0;
+        font-size: 13px;
+        font-family: 'Magra', sans-serif;
+        width: 100px;
+        cursor: pointer;
+      }
+
+      #messages a{
+        background-color: white;
+        color: black;
+        border-radius: 10px;
+        padding: 0 10px;
+
+      }
+      
+      #cerrarmodal {
+        width: 50px;
+        height: 40px;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+       }
+       
+       .acciones {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="contenido">
+            <h1>Historial ventas</h1>
+            <div id="tabla-container">
+                <table id="tabla-productos">
+                    <thead>
+                       <form action="/filtrosv" method="get">
+                        <tr>
+                            {% csrf_token %}
+                            <th style="width: 10%;">ID<img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="id" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;"></th>
+                            <th style="width: 14%;">Vendido<img class="filtro" src="/media/filtro.png" alt=""><input type="text" name="productosv" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;"></th>
+                            <th style="width: 10%;">IVA<img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="iva" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;" ></th>
+                            <th style="width: 10%;">Subtotal<img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="subtotal" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;"></th>
+                            <th style="width: 10%;">Total <img class="filtro" src="/media/filtro.png" alt=""><input type="number" name="total" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;">
+                            <th style="width: 14%;">metodo de pago <img class="filtro" src="/media/filtro.png" alt=""><input type="text"  name="metodo_pago" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;">
+                            <th style="width: 10%;">Fecha <img class="filtro" src="/media/filtro.png" alt=""><input type="date" name="fecha" style="display: none; border-radius: 20px; width: 90%; padding-left: 10px;">
+                            <th style="width: 10%;"><button type="submit" type="submit" style="width: 120px; padding: 4px 8px;">Aplicar filtros</button></th>
+                            <th style="width: 10%;"><button type="submit" style="width: 120px; padding: 4px 8px;">Quitar filtros</button></th>
+                        </tr>
+                        </form>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                        <tr>
+                            <td>{{ venta.id }}</td>
+                            <td>{{ venta.productosv }}</td>
+                            <td>{{ venta.iva }}</td>
+                            <td>{{ venta.subtotal }}</td>
+                            <td>{{ venta.total }}</td>
+                            <td>{{ venta.metodo_pago }}</td>
+                            <td>{{ venta.fecha|date:"d/m/Y" }}</td>
+                            <td>
+                                <img src="/media/power.png" style="width: 90px; height: 25px;" alt="">
+                            </td>
+                            <td>
+                                <img src="/media/palace.png" style="width: 90px; height: 25px;" alt="">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                    </div>
+                    </div>
+                    </main>
+                    
+                    {% for message in messages %}
+                    <div class="ventana" id="miVentana" style="position: absolute; top: 325px; left: 50%; z-index: 9999;"></div>
+                    <div class="modal-contenido">
+                        <div class="modal-cerrar">
+                            <a href="/historial_ventas"><img src="/media/cerrar.png" id="cerrar" alt="cerrar"></a>
+                        </div>
+                        <p id="messages">{{ message }}</p>
+                        <a href="/historial_ventas"><button class="botones-modal">Finalizar</button></a>
+                    </div>
+                    </div>
+                    </div>
+                    {% endfor %}
+                    </body>
+{% endblock content%}
+
+{% block js %}
+<script>
+    // Obtener todos los elementos con la clase "filtro"
+    var filtros = document.getElementsByClassName("filtro");
+
+    // Recorrer todos los elementos y agregar un evento de clic a cada uno
+    for (var i = 0; i < filtros.length; i++) {
+        filtros[i].addEventListener("click", mostrarInput);
+    }
+
+    // Función para mostrar u ocultar el campo de entrada al hacer clic en el filtro
+    function mostrarInput() {
+        var input = this.nextElementSibling; // Obtener el siguiente elemento después del ícono de filtro
+
+        if (input.style.display === "block") {
+            input.style.display = "none"; // Si ya está visible, ocultarlo
+        } else {
+            input.style.display = "block"; // Si está oculto, mostrarlo
+        }
+    }
+
+</script>
+    {% endblock js %}
